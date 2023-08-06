@@ -1,2 +1,14 @@
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
+<script lang="ts">
+	import Carousel from '$lib/components/Carousel.svelte';
+	import Hero from './Hero.svelte';
+
+	export let data;
+
+	console.log(data);
+</script>
+
+<h1 class="column">Top Trending movies</h1>
+
+<Hero movie={data.featured} />
+
+<Carousel movies={data.trending.results} />
