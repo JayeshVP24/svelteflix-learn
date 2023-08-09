@@ -4,7 +4,13 @@ import type { MovieDetails, MovieList } from "$lib/types.d.ts"
 
 
 export const load: Load = async ({ fetch }) => {
-    const trending = await api.get(fetch, 'trending/movie/day') as MovieList
+    const [trending, now_playing, upcoming] = await Promise.all([
+        api.get(fetch, 'trending/movie/day') as Promise<MovieList>,
+        api.get(fetch, 'movie/now_playing') as Promise<MovieList>,
+        api.get(fetch, 'movie/upcoming') as Promise<MovieList>,
+
+    ])
+
 
     const featured = (await api.get(fetch, `movie/${trending.results[0].id}`, {
         append_to_response: 'images'
@@ -12,6 +18,8 @@ export const load: Load = async ({ fetch }) => {
 
     return {
         trending,
-        featured
+        featured,
+        upcoming,
+        now_playing
     }
 }
