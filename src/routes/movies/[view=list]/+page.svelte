@@ -1,11 +1,36 @@
 <script lang="ts">
-	import ResulstsPage from '$lib/components/ResulstsPage.svelte';
+	import * as api from '$lib/api';
+	import ResultsPage from '$lib/components/ResultsPage.svelte';
 
 	export let data;
+
+	let appending = false;
 </script>
 
 <div class="column">
 	<h1>{data.title}</h1>
 
-	<ResulstsPage movies={data.movies} next="/movies/{data.view}?page" />
+	<ResultsPage
+		movies={data.movies}
+		next="/movies/{data.view}?page={data.next_page}"
+		on:end={async () => {
+			if (!data.next_page) return;
+			if (appending) return;
+
+			const next = await api.get(fetch, data.endpoint, {
+				page: String(data.next_page)
+			});
+
+			data.movies = [...data.movies, ...next.results];
+			data.next_page = next.page < next.total_pages ? next.page + 1 : null;
+		}}
+	/>
 </div>
+
+<style>
+	.column {
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+	}
+</style>
